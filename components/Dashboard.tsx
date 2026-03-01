@@ -57,7 +57,20 @@ const Dashboard: React.FC<DashboardProps> = ({ state, setCurrentView, language =
     const filteredExpenses = state.expenses.filter(e => filterByDate(e.date));
     const revenue = filteredSales.reduce((acc, curr) => acc + curr.amount, 0);
     const expenses = filteredExpenses.reduce((acc, curr) => acc + curr.amount, 0);
-    const profit = revenue - expenses;
+    
+    // Calculate COGS for profit
+    const cogs = filteredSales.reduce((totalCogs, sale) => {
+      return totalCogs + sale.items.reduce((itemCogs, item) => {
+        let itemCost = item.cost_price;
+        if (itemCost === undefined) {
+           const product = state.inventory.find(p => p.sku === item.sku);
+           itemCost = product ? product.cost_price : 0;
+        }
+        return itemCogs + (item.qty * itemCost);
+      }, 0);
+    }, 0);
+
+    const profit = revenue - cogs - expenses;
     const inventoryValue = state.inventory.reduce((acc, curr) => acc + (curr.stock * curr.price), 0);
     const totalCost = state.inventory.reduce((acc, curr) => acc + (curr.stock * curr.cost_price), 0);
     return { revenue, expenses, profit, inventoryValue, totalCost };

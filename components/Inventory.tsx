@@ -280,7 +280,7 @@ const Inventory: React.FC<InventoryProps> = ({ inventory, suppliers, onUpdate, o
         const costPrice = Math.round(parseFloat(parts[6])) || 0;
         const supplier = parts[7]?.trim() || '';
 
-        const threshold = p.lowStockThreshold || 10;
+        const threshold = 10;
         return {
           sku,
           name,
@@ -466,12 +466,21 @@ const Inventory: React.FC<InventoryProps> = ({ inventory, suppliers, onUpdate, o
       updatedProduct.price = Math.round(updatedProduct.price || 0);
       updatedProduct.cost_price = Math.round(updatedProduct.cost_price || 0);
       
-      if (editingProduct) onUpdate(inventory.map(p => p.sku === editingProduct.sku ? updatedProduct : p));
-      else onUpdate([...inventory, updatedProduct]);
+      // Determine if we should generate a PO (Only for new products with stock)
+      const shouldGeneratePO = !editingProduct && onAddOrder && (formData.stock || 0) > 0;
 
-      // Generate Purchase Order ONLY if adding new stock or new product
-      // We assume adding a product always implies a purchase of the initial stock
-      if (onAddOrder && (formData.stock || 0) > 0) {
+      // If generating a PO, we set initial stock to 0 so the PO addition results in the correct total.
+      // Otherwise (editing or no PO), we use the form's stock value directly.
+      const productToSave = {
+        ...updatedProduct,
+        stock: shouldGeneratePO ? 0 : updatedProduct.stock
+      };
+
+      if (editingProduct) onUpdate(inventory.map(p => p.sku === editingProduct.sku ? productToSave : p));
+      else onUpdate([...inventory, productToSave]);
+
+      // Generate Purchase Order ONLY if adding new product
+      if (shouldGeneratePO) {
           const purchaseOrder: Order = {
               id: `PO-${Date.now().toString().slice(-4)}`,
               date: new Date().toISOString().split('T')[0],
@@ -484,14 +493,15 @@ const Inventory: React.FC<InventoryProps> = ({ inventory, suppliers, onUpdate, o
               items: [{
                   sku: finalSku,
                   name: updatedProduct.name,
-                  qty: updatedProduct.stock,
+                  qty: updatedProduct.stock, // Use the original entered stock for the PO
                   price: updatedProduct.cost_price,
+                  cost_price: updatedProduct.cost_price,
                   total: totalCost,
                   size: updatedProduct.size,
                   variation: updatedProduct.variation
               }]
           };
-          onAddOrder(purchaseOrder);
+          onAddOrder!(purchaseOrder);
       }
 
       setIsModalOpen(false);

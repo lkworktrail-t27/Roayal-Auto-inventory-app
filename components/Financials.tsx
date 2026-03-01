@@ -145,7 +145,19 @@ const Financials: React.FC<FinancialsProps> = ({ state, onRecordPayment, languag
     }
     else if (type === 'Balance Sheet') {
       const revenue = filteredSales.reduce((a, b) => a + b.amount, 0);
-      const cogs = Math.round(revenue * 0.55);
+      
+      // Calculate COGS accurately
+      const cogs = filteredSales.reduce((totalCogs, sale) => {
+          return totalCogs + sale.items.reduce((itemCogs, item) => {
+              let itemCost = item.cost_price;
+              if (itemCost === undefined) {
+                  const product = state.inventory.find(p => p.sku === item.sku);
+                  itemCost = product ? product.cost_price : 0;
+              }
+              return itemCogs + (item.qty * itemCost);
+          }, 0);
+      }, 0);
+
       const grossProfit = revenue - cogs;
       const opExpenses = filteredExpenses.reduce((a, b) => a + b.amount, 0);
       const netIncome = grossProfit - opExpenses;
@@ -174,8 +186,20 @@ const Financials: React.FC<FinancialsProps> = ({ state, onRecordPayment, languag
   const calculations = useMemo(() => {
     const revenue = state.sales.reduce((a, b) => a + b.amount, 0);
     const opExpenses = state.expenses.reduce((a, b) => a + b.amount, 0);
-    // COGS estimation rounded
-    const cogs = Math.round(revenue * 0.55); 
+    
+    // COGS calculation
+    const cogs = state.sales.reduce((totalCogs, sale) => {
+      const saleCogs = sale.items.reduce((itemCogs, item) => {
+        let itemCost = item.cost_price;
+        if (itemCost === undefined) {
+           const product = state.inventory.find(p => p.sku === item.sku);
+           itemCost = product ? product.cost_price : 0;
+        }
+        return itemCogs + (item.qty * itemCost);
+      }, 0);
+      return totalCogs + saleCogs;
+    }, 0);
+
     const grossProfit = Math.round(revenue - cogs);
     const netIncome = Math.round(grossProfit - opExpenses);
 

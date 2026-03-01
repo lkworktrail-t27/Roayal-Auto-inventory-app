@@ -273,6 +273,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ title, data, invent
         name: product.name,
         qty: itemQty,
         price: roundedPrice,
+        cost_price: product.cost_price, // Added to track COGS
         total: itemQty * roundedPrice,
         size: product.size,
         variation: product.variation

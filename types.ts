@@ -33,6 +33,7 @@ export interface OrderItem {
   name: string;
   qty: number;
   price: number;
+  cost_price?: number; // Added to track COGS
   total: number;
   size?: string;
   variation?: string;
