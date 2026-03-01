@@ -453,6 +453,66 @@ const App: React.FC = () => {
     showToast(`Cash ${transaction.type.toLowerCase()} logged`);
   };
 
+  const deleteOrder = (orderId: string, type: 'Sales' | 'Purchase') => {
+    if (!window.confirm(language === 'bn' ? 'আপনি কি নিশ্চিত যে আপনি এই রেকর্ডটি মুছে ফেলতে চান?' : 'Are you sure you want to delete this record? This will revert stock changes.')) {
+      return;
+    }
+
+    setState(prev => {
+      const isSales = type === 'Sales';
+      const orderList = isSales ? prev.sales : prev.purchases;
+      const orderToDelete = orderList.find(o => o.id === orderId);
+      
+      if (!orderToDelete) return prev;
+
+      // Revert Inventory
+      const newInventory = prev.inventory.map(p => {
+        const item = orderToDelete.items.find(oi => oi.sku === p.sku);
+        if (item) {
+          // If it was a sale, we subtracted stock, so now we add it back.
+          // If it was a purchase, we added stock, so now we subtract it.
+          const newStock = isSales ? p.stock + item.qty : Math.max(0, p.stock - item.qty);
+           const threshold = p.lowStockThreshold || 10;
+          return {
+            ...p,
+            stock: newStock,
+            status: (newStock <= 0 ? 'Out of Stock' : newStock < threshold ? 'Low Stock' : 'In Stock') as 'Out of Stock' | 'Low Stock' | 'In Stock',
+            lastUpdated: new Date().toLocaleString()
+          };
+        }
+        return p;
+      });
+
+      // Remove Order
+      const newOrderList = orderList.filter(o => o.id !== orderId);
+      
+      // Remove associated CashBox entries
+      // We look for descriptions containing the Order ID to remove related financial records
+      const newCashBox = prev.cashBox.filter(c => !c.description.includes(`Order ${orderId}`) && !c.description.includes(`: ${orderId}`));
+
+      // Update customer total purchases if applicable
+      let newCustomers = prev.customers;
+      if (isSales && orderToDelete.customer) {
+        newCustomers = prev.customers.map(c => {
+          if (c.name === orderToDelete.customer) {
+            return { ...c, totalPurchases: Math.max(0, (c.totalPurchases || 0) - orderToDelete.amount) };
+          }
+          return c;
+        });
+      }
+
+      return {
+        ...prev,
+        inventory: newInventory,
+        sales: isSales ? newOrderList : prev.sales,
+        purchases: !isSales ? newOrderList : prev.purchases,
+        cashBox: newCashBox,
+        customers: newCustomers
+      };
+    });
+    showToast(language === 'bn' ? 'রেকর্ড মুছে ফেলা হয়েছে' : `${type} record deleted`);
+  };
+
   const recentActivities = useMemo(() => {
     const combined = [
       ...state.sales.map(s => ({ ...s, category: 'Sales' as const })),
@@ -763,8 +823,8 @@ const App: React.FC = () => {
                   switch (currentView) {
                     case 'dashboard': return <Dashboard state={state} setCurrentView={setCurrentView} language={language} />;
                     case 'inventory': return <Inventory inventory={state.inventory} suppliers={state.suppliers} onUpdate={updateInventory} onAddSupplier={addSupplier} onAddOrder={addOrder} showToast={showToast} lastImported={state.lastImported} onUpdateLastImported={updateLastImported} language={language} />;
-                    case 'sales': return <TransactionTable title="Sales" data={state.sales} inventory={state.inventory} onAddOrder={addOrder} suppliers={state.suppliers} onAddSupplier={addSupplier} customers={state.customers} onAddCustomer={addCustomer} language={language} />;
-                    case 'purchase': return <TransactionTable title="Purchase" data={state.purchases} inventory={state.inventory} onAddOrder={addOrder} suppliers={state.suppliers} onAddSupplier={addSupplier} language={language} />;
+                    case 'sales': return <TransactionTable title="Sales" data={state.sales} inventory={state.inventory} onAddOrder={addOrder} onDeleteOrder={deleteOrder} suppliers={state.suppliers} onAddSupplier={addSupplier} customers={state.customers} onAddCustomer={addCustomer} language={language} />;
+                    case 'purchase': return <TransactionTable title="Purchase" data={state.purchases} inventory={state.inventory} onAddOrder={addOrder} onDeleteOrder={deleteOrder} suppliers={state.suppliers} onAddSupplier={addSupplier} language={language} />;
                     case 'costs': return <Expenses expenses={state.expenses} cashBox={state.cashBox} onAddExpense={addExpense} language={language} />;
                     case 'cashbox': return <CashBox transactions={state.cashBox} onAddTransaction={addCashTransaction} language={language} />;
                     case 'finance': return <Financials state={state} onRecordPayment={handleOrderPayment} language={language} />;

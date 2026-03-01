@@ -170,7 +170,7 @@ const Inventory: React.FC<InventoryProps> = ({ inventory, suppliers, onUpdate, o
     });
 
     // Then, sort items
-    if (!lowerTerm) return matches;
+    if (!lowerTerm) return [...matches].reverse();
 
     return matches.sort((a, b) => {
       const aNameStarts = a.name.toLowerCase().startsWith(lowerTerm);

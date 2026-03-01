@@ -51,6 +51,7 @@ export interface Order {
   status: OrderStatus;
   items: OrderItem[];
   type: 'Sales' | 'Purchase';
+  isArchived?: boolean;
 }
 
 export interface Expense {

@@ -11,6 +11,7 @@ interface TransactionTableProps {
   data: Order[];
   inventory: Product[];
   onAddOrder: (order: Order) => void;
+  onDeleteOrder?: (orderId: string, type: 'Sales' | 'Purchase') => void;
   suppliers?: Supplier[];
   onAddSupplier?: (supplier: Supplier) => void;
   customers?: Customer[];
@@ -18,7 +19,7 @@ interface TransactionTableProps {
   language?: 'en' | 'bn';
 }
 
-const TransactionTable: React.FC<TransactionTableProps> = ({ title, data, inventory, onAddOrder, suppliers, onAddSupplier, customers, onAddCustomer, language = 'en' }) => {
+const TransactionTable: React.FC<TransactionTableProps> = ({ title, data, inventory, onAddOrder, onDeleteOrder, suppliers, onAddSupplier, customers, onAddCustomer, language = 'en' }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCustomerListOpen, setIsCustomerListOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
@@ -772,12 +773,24 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ title, data, invent
                 </div>
               </div>
 
-              <button 
-                onClick={(e) => { e.stopPropagation(); handleExportOrder(order); }}
-                className="group h-14 w-14 bg-slate-900 text-white rounded-[1.25rem] flex items-center justify-center shadow-xl active:scale-90 transition-all hover:bg-blue-600"
-              >
-                <Download size={22} className="group-hover:translate-y-0.5 transition-transform" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={(e) => { e.stopPropagation(); handleExportOrder(order); }}
+                  className="group h-14 w-14 bg-slate-900 text-white rounded-[1.25rem] flex items-center justify-center shadow-xl active:scale-90 transition-all hover:bg-blue-600"
+                >
+                  <Download size={22} className="group-hover:translate-y-0.5 transition-transform" />
+                </button>
+                
+                {onDeleteOrder && (
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); onDeleteOrder(order.id, title); }}
+                    className="group h-14 w-14 bg-rose-50 text-rose-500 border border-rose-100 rounded-[1.25rem] flex items-center justify-center shadow-sm active:scale-90 transition-all hover:bg-rose-500 hover:text-white"
+                    title={language === 'bn' ? 'মুছে ফেলুন' : 'Delete Record'}
+                  >
+                    <Trash2 size={22} />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         ))}
