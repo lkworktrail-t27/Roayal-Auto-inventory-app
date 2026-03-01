@@ -1,11 +1,52 @@
-<div align="center">
+# Royal Auto Inventory System
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+A comprehensive inventory management system built with React, TypeScript, and Tailwind CSS.
 
-  <h1>Built with AI Studio</h2>
+## Features
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+- **Dashboard**: Real-time overview of sales, stock value, and recent activity.
+- **Inventory Management**: Add, edit, and track products with low stock alerts.
+- **Sales & Purchase Orders**: Create and manage orders with PDF invoice generation.
+- **Cash Box**: Track daily income and expenses.
+- **Financial Reports**: Generate balance sheets, income statements, and more.
+- **Supplier & Customer Management**: Maintain directories of partners and clients.
+- **Multi-language Support**: English and Bengali.
+- **Dark Mode**: Fully supported dark theme.
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+## Tech Stack
 
-</div>
+- **Frontend**: React 19, TypeScript, Tailwind CSS
+- **Build Tool**: Vite
+- **Icons**: Lucide React
+- **Charts**: Recharts
+- **PDF Generation**: jsPDF, jsPDF-AutoTable
+
+## Setup & Deployment
+
+### Local Development
+
+1.  Clone the repository.
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
+3.  Start the development server:
+    ```bash
+    npm run dev
+    ```
+
+### Deployment to Vercel
+
+1.  Push your code to a GitHub repository.
+2.  Log in to Vercel and import the repository.
+3.  Vercel will automatically detect the Vite settings.
+4.  Click **Deploy**.
+
+## Default Credentials (for testing without DB)
+
+- **Owner**: `admin@royal.com` / `admin123`
+- **Staff**: `staff@royal.com` / `staff123`
+
+## License
+
+Private software for Royal Auto.

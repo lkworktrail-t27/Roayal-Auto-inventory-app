@@ -1,0 +1,124 @@
+
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>Royal Auto | Mobile POS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Tiro+Bangla&display=swap" rel="stylesheet">
+    <script>
+      // Initialize theme before rendering to avoid flashing. 
+      // Defaults to light mode if no preference is saved.
+      if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+
+      tailwind.config = {
+        darkMode: 'class',
+        safelist: [
+          'bg-blue-500', 'border-blue-500', 'ring-blue-500/10', 'shadow-blue-500/20',
+          'bg-indigo-500', 'border-indigo-500', 'ring-indigo-500/10', 'shadow-indigo-500/20',
+          'bg-emerald-500', 'border-emerald-500', 'ring-emerald-500/10', 'shadow-emerald-500/20',
+          'bg-amber-500', 'border-amber-500', 'ring-amber-500/10', 'shadow-amber-500/20',
+          'bg-purple-500', 'border-purple-500', 'ring-purple-500/10', 'shadow-purple-500/20',
+          'bg-rose-500', 'border-rose-500', 'ring-rose-500/10', 'shadow-rose-500/20',
+          'bg-cyan-500', 'border-cyan-500', 'ring-cyan-500/10', 'shadow-cyan-500/20',
+          'bg-slate-500', 'border-slate-500', 'ring-slate-500/10', 'shadow-slate-500/20',
+          'bg-orange-500', 'border-orange-500', 'ring-orange-500/10', 'shadow-orange-500/20'
+        ]
+      }
+    </script>
+    <style>
+        body { 
+          font-family: 'Plus Jakarta Sans', sans-serif; 
+          -webkit-tap-highlight-color: transparent; 
+          overscroll-behavior-y: contain;
+          height: 100%;
+        }
+        #root { height: 100%; }
+        
+        /* Smooth theme transition */
+        html {
+          transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar { -webkit-overflow-scrolling: touch; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .safe-area-bottom {
+          padding-bottom: env(safe-area-inset-bottom);
+        }
+        .safe-area-top {
+          padding-top: env(safe-area-inset-top);
+        }
+        @keyframes bounce-short {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-3px); }
+        }
+        .animate-bounce-short {
+          animation: bounce-short 1s ease-in-out infinite;
+        }
+
+        /* Bangla Font Overrides - Refined for Premium Appearance */
+        .lang-bn {
+          font-family: 'Tiro Bangla', serif !important;
+        }
+        .lang-bn * {
+          font-weight: 600 !important; /* Slightly reduced weight for elegance but still bold */
+          line-height: 1.25 !important;
+          letter-spacing: 0.01em !important;
+        }
+        .lang-bn h1 { 
+          font-size: 0.98em !important; 
+          font-weight: 800 !important;
+        }
+        .lang-bn h2, .lang-bn h3 { 
+          font-size: 0.96em !important; 
+          font-weight: 700 !important;
+        }
+        .lang-bn p, .lang-bn span, .lang-bn button, .lang-bn label, .lang-bn input, .lang-bn select { 
+          font-size: 0.94em !important;
+        }
+        .lang-bn .text-[10px], .lang-bn .text-[9px], .lang-bn .text-[8px] {
+          font-size: 0.68rem !important;
+          font-weight: 700 !important;
+        }
+        .lang-bn .font-black {
+          font-weight: 800 !important;
+        }
+
+        /* Dark mode custom background to avoid standard white flashes */
+        .dark body {
+          background-color: #020617;
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.563.0",
+    "recharts": "https://esm.sh/recharts@^3.7.0",
+    "jspdf": "https://esm.sh/jspdf@^2.5.1",
+    "jspdf-autotable": "https://esm.sh/jspdf-autotable@^3.8.2"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased overflow-hidden transition-colors duration-500">
+    <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
